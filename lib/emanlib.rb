@@ -1,4 +1,5 @@
 require_relative "patch/define"
+require_relative "patch/enum"
 require_relative "patch/foobar"
 require_relative "patch/lambda"
 
@@ -6,10 +7,10 @@ module EmanLib
   # The identity Lambda object (`_`).
   # Store in a short variable, and use it as a building block for anonymous functions.
   #
-  #     _ = EmanLib.LAMBDA
+  #     _ = EmanLib._
   #     [1, 2, 3].map(&_.succ) => [2, 3, 4]
   #     [[1, 2], [3, 4]].map(&(_ + _).lift) => [3, 7]
-  LAMBDA = Lambda.new
+  _ = Lambda.new
 
   # Helper method to create definitions.
   # A convenient shorthand for `Object.new.define(...)`.
@@ -21,7 +22,11 @@ module EmanLib
   # @see [Object#define]
   #
   # @example
-  #   point = let(x: 10, y: 20)
+  #   person = let(name: "Rio", age: 37)
+  #   puts person.name # => "Rio"
+  #   puts person.age  # => 37
+  #
+  #   point = let **{x: 10, y: 20}
   #   puts point.x # => 10
   #
   #   settings = let do
@@ -31,22 +36,20 @@ module EmanLib
   #   end
   #   puts settings.theme # => "dark"
   #
-  #   complex_data = let([[:id, "item1"]], name: "Test Item") do
+  #   complex_data = let([[:id, 42]], name: "Xed") do
   #     details = { color: "red", size: "large" }
-  #     binding
+  #     binding # Required
   #   end
   #
-  #   puts complex_data.id            # => "item1"
-  #   puts complex_data.name          # => "Test Item"
+  #   puts complex_data.id            # => 42
+  #   puts complex_data.name          # => "Xed"
   #   puts complex_data.details.color # => "red"
   def let(*args, &block)
     Object.new.define(*args, &block)
   end
 
-  module_function :let
-
   # Support for using a `_` as the second operand with operators.
-  # WARN: This method will MODIFY the standard library classes.
+  # WARN: This method WILL MODIFY the standard library classes.
   # In particular, the operators: `- * / % ** & | ^ << >> <=> == === != > < >= <=`
   # in the classes: `Integer, Float, Rational, Complex, Array, String, Hash, Range, Set`
   def support_lambda
@@ -69,5 +72,5 @@ module EmanLib
     end
   end
 
-  module_function :support_lambda
+  module_function :let, :support_lambda
 end
