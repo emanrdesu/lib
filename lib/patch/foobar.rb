@@ -121,22 +121,24 @@ class Object
   end
 
   # Asserts a condition about `self`.
-  # If a block is given, it asserts that the block, when called with `self`, returns a truthy value.
+  # If a block is given, it asserts that the block returns a truthy value.
+  # The block is passed `self` as an argument.
   # If no block is given, it asserts that `n === self` is true.
   # If the assertion fails, it performs a non-local exit by `raise`.
   #
-  # @param `n` ([Object]) The object to compare with `self` if no block is given. Defaults to `self`.
+  # @param `n` ([Object]) The object to compare with `self` if no block is given.
   # @param `error` ([Class]) The class of error to raise if the assertion fails.
-  #   Defaults to `StandardError`.
+  # @param `message` (String?) An optional message to include in the raised error.
   # @yield [self] Optional block whose truthiness is asserted.
   # @return [self] The original object if assertion passes.
   # @throw `error` (or a related symbol) if the assertion fails.
   #
   # @example
   #   5.assert(Integer) # Passes
-  #   "string".assert(error: ArgumentError) { |s| s.length > 5 } # Passes
-  def assert(n = self, error: StandardError)
-    tap { (block_given? ? yield(self) : (n === self)) || raise(error) }
+  #   "string".assert(error: ArgumentError) { |s| s.size > 5 } # Passes
+  #   "".assert(message: "String too short") {|s| s.size > 5 } # Raises error with message
+  def assert(n = self, error: StandardError, message: nil)
+    tap { (block_given? ? yield(self) : (n === self)) || (message ? raise(error, message) : raise(error)) }
   end
 
   # Prints the `inspect` representation of `self` to standard output.

@@ -63,7 +63,7 @@ module EmanLib
             raise ArgumentError, "Block must return a Numeric, got #{result.class}: #{result.inspect}"
           end
 
-          # Check that result for unique
+          # Check that result is unique
           if values.include?(result)
             raise ArgumentError, "Block must return unique values, duplicate: #{result}"
           end
@@ -87,6 +87,10 @@ module EmanLib
         rescue => e
           raise ArgumentError, "Invalid const name '#{name}': #{e.message}"
         end
+      end
+
+      klass.define_method(:initialize) do
+        raise RuntimeError, "Enums are not meant to be instantiated"
       end
 
       # Define utility methods directly on the class
