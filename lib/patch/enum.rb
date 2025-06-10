@@ -12,11 +12,10 @@ module EmanLib
   #   Pet = Enum[:Dog, :Cat] { |v| 0.5 * v } # Pet.Dog => 0.0, Pet.Cat => 0.5
   #
   # The generated enum class provides:
-  # * Class methods to access each constant's value (e.g., `Lvl.MID`).
+  # * Class methods to access each constant's value (e.g., `Way.↑`).
+  # * A `size` method to get the number of defined constants.
   # * An `each` class method to iterate over value-name pairs.
   # * A `to_h` class method to get a hash of name-value pairs.
-  # * A `consts` class method to get an array of constant names (as symbols).
-  # * A `values` class method to get an array of constant values.
   module Enum
     def self.[](*args, &block)
       # At least one argument should be provided
@@ -55,21 +54,21 @@ module EmanLib
       # Apply block transformation if provided
       if block_given?
         values = Set.new
-        pairs.each do |name, value|
-          result = block.call(value, name)
+        pairs.each do |prop, value|
+          hash = block.call(value, prop)
 
           # Make sure block result is Numeric
-          unless result.is_a?(Numeric)
-            raise ArgumentError, "Block must return a Numeric, got #{result.class}: #{result.inspect}"
+          unless hash.is_a?(Numeric)
+            raise ArgumentError, "Block must return a Numeric, got #{hash.class}: #{hash.inspect}"
           end
 
           # Check that result is unique
-          if values.include?(result)
-            raise ArgumentError, "Block must return unique values, duplicate: #{result}"
+          if values.include?(hash)
+            raise ArgumentError, "Block must return unique values, duplicate: #{hash}"
           end
 
-          values.add(result)
-          pairs[name] = result
+          values.add(hash)
+          pairs[prop] = hash
         end
       end
 
@@ -81,11 +80,11 @@ module EmanLib
       klass.instance_variable_set(:@pairs, pairs.freeze)
 
       # Define getter methods for each constant
-      pairs.each do |name, value|
+      pairs.each do |prop, value|
         begin
-          klass.define_singleton_method(name) { value }
+          klass.define_singleton_method(prop) { value }
         rescue => e
-          raise ArgumentError, "Invalid const name '#{name}': #{e.message}"
+          raise ArgumentError, "Invalid const name '#{prop}': #{e.message}"
         end
       end
 
@@ -94,23 +93,19 @@ module EmanLib
       end
 
       # Define utility methods directly on the class
+      klass.define_singleton_method(:size) do
+        @pairs.size
+      end
+
       klass.define_singleton_method(:to_h) do
         @pairs.dup
-      end
-
-      klass.define_singleton_method(:consts) do
-        @pairs.keys
-      end
-
-      klass.define_singleton_method(:values) do
-        @pairs.values
       end
 
       klass.define_singleton_method(:each) do |&block|
         return enum_for(:each) unless block
 
-        @pairs.each do |name, value|
-          block.call(value, name)
+        @pairs.each do |prop, value|
+          block.call(value, prop)
         end
       end
 

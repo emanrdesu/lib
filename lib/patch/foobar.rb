@@ -283,8 +283,8 @@ class Array
   #   ["a","b"].third  # => nil
   %i[second third fourth fifth sixth seventh eighth ninth tenth]
     .zip(1..) # 1-based index for human-readable Nth
-    .each do |method_name, index|
-    define_method(method_name) do |n = 1|
+    .each do |method, index|
+    define_method(method) do |n = 1|
       # `index` is 1 for 'second', 2 for 'third', etc.
       # So, for 'second' (index 1), drop 1. For 'third' (index 2), drop 2.
       drop(index).take(n).simplify
