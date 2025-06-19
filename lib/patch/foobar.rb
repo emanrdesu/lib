@@ -338,3 +338,28 @@ end
 class Hash
   alias flip invert
 end
+
+module Kernel
+  # Executes the given block and "parries" any caught StandardError,
+  # re-raising it as the specified klass with an optional custom message.
+  #
+  # @param klass [Class<StandardError>] The error class to re-raise if an error occurs.
+  # @param message [String, nil] An optional custom error message.
+  #   If nil, the original error's message is used.
+  # @raise [klass] Raises the specified klass with the appropriate message.
+  def parry(klass, message = nil)
+    begin
+      yield
+    rescue StandardError => e
+      final_message = message || e.message
+
+      if e.is_a?(klass) && message.nil?
+        raise e
+      else
+        new_error = klass.new(final_message)
+        new_error.set_backtrace(e.backtrace)
+        raise new_error
+      end
+    end
+  end
+end
