@@ -1,4 +1,4 @@
-module EmanLib
+module Kernel
   # The Enum module provides a factory method `[]` to dynamically create
   # simple, lightweight enum-like classes. These classes allow defining a set of
   # named constants with associated numeric values.

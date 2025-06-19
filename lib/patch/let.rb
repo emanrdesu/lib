@@ -81,7 +81,7 @@ class String
   end
 end
 
-module EmanLib
+module Kernel
   # A convenient shorthand for `Maplet.new.define!(...)`.
   #
   # @param args [Array<Hash, Array>] A list of Hashes or "hashy" Arrays.

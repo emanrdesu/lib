@@ -19,7 +19,7 @@ class Array
   end
 end
 
-module EmanLib
+module Kernel
 
   # A Lambda object (`_`) is building block for anonymous functions.
   # For instance, (`_ + _`) represents f(x,y) = x + y
@@ -157,7 +157,9 @@ module EmanLib
   #     [1, 2, 3].map(&_.succ) => [2, 3, 4]
   #     [[1, 2], [3, 4]].map(&(_ + _).lift) => [3, 7]
   _ = Lambda.new
+end
 
+module EmanLib
   # Support for using a `_` as the second operand with operators.
   # WARN: This method WILL MODIFY the standard library classes.
   # In particular, the operators: `- * / % ** & | ^ << >> <=> == === != > < >= <=`
