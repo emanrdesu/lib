@@ -4,5 +4,5 @@ require_relative "patch/lambda"
 require_relative "patch/let"
 
 module EmanLib
-  VERSION = "1.0.0"
+  VERSION = "1.0.1"
 end
